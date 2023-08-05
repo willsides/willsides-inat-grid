@@ -1,0 +1,78 @@
+// Formatting for the container holding each item's text attributes
+.ws-inat-item {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	text-align: left;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	transition: background-color 0.15s;
+}
+.ws-inat-item:hover {
+	background-color: rgba(0, 0, 0, 0.2);
+}
+
+//  Formatting for the top-level container of each grid item
+.ws-inat-link {
+    display: block;
+    width: 100%;
+    height: 0; // Ensures 1:1 aspect ratio
+    padding-bottom: 100%; 
+    background-size: cover; // Background image will be set inline
+    position: relative; 
+	color: rgba(255, 255, 255, 0.6) !important; //formatting for text within the grid item
+	text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
+	transition: text-shadow 0.15s, color 0.15s;
+}
+.ws-inat-link:hover {
+	color: rgba(255, 255, 255, 1) !important;
+	text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.5);
+}
+
+// Defines the top-level grid layout. Some settings are defined with inline css
+.ws-inat-grid-container {
+    display: grid;
+}
+
+// Layout for the ID and grade text displayed on each grid item
+.ws-inat-top-row-info {
+	display: flex;
+	font-size: 0.7rem;
+	flex-direction: row;
+	flex-wrap: wrap-reverse;
+	justify-content: space-between;
+}
+.ws-inat-top-row-info > * {
+	white-space: nowrap;
+}
+
+.ws-inat-info {
+	padding: 2%;
+}
+
+// Positions the placeholder text and inline 'Refresh' button
+.ws-inat-editor-placeholder {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+// Formatting for the header row
+.ws-inat-block-header {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	font-size: x-large;
+}
+
+.ws-inat-block-header svg {
+	max-height: 50px;
+	max-width: 50px;
+}
+
+.ws-inat-block-header > * {
+	padding: 0.5rem;
+}

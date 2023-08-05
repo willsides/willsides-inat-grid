@@ -1,0 +1,57 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "willsides/willsides-inat-grid",
+  "version": "1.0.0",
+  "title": "Grid of iNaturalist Observations",
+  "category": "embed",
+  "icon": "smiley",
+  "description": "Displays a grid of observations from iNaturalist",
+  "supports": {
+    "html": false,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "typography": {
+      "__experimentalFontFamily": true,
+      "__experimentalFontWeight": true,
+      "__experimentalFontStyle": true,
+      "__experimentalTextTransform": true,
+      "__experimentalLetterSpacing": true
+    }
+  },
+  "attributes": {
+    "user_id": {
+      "type": "string",
+      "default": ""
+    },
+    "d1": {
+      "type": "string"
+    },
+    "d2": {
+      "type": "string"
+    },
+    "per_page": {
+      "type": "integer",
+      "default": 200
+    },
+    "gridSize": {
+      "type": "integer",
+      "default": 150
+    },
+    "gridGap": {
+      "type": "integer",
+      "default": 3
+    },
+    "showHeader": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "textdomain": "inat-observations",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScript": "file:./script.js"
+}

@@ -1,0 +1,80 @@
+/*!***************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/style.scss ***!
+  \***************************************************************************************************************************************************************************************************************************************/
+.ws-inat-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: background-color 0.15s;
+}
+
+.ws-inat-item:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.ws-inat-link {
+  display: block;
+  width: 100%;
+  height: 0;
+  padding-bottom: 100%;
+  background-size: cover;
+  position: relative;
+  color: rgba(255, 255, 255, 0.6) !important;
+  text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
+  transition: text-shadow 0.15s, color 0.15s;
+}
+
+.ws-inat-link:hover {
+  color: rgb(255, 255, 255) !important;
+  text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.5);
+}
+
+.ws-inat-grid-container {
+  display: grid;
+}
+
+.ws-inat-top-row-info {
+  display: flex;
+  font-size: 0.7rem;
+  flex-direction: row;
+  flex-wrap: wrap-reverse;
+  justify-content: space-between;
+}
+
+.ws-inat-top-row-info > * {
+  white-space: nowrap;
+}
+
+.ws-inat-info {
+  padding: 2%;
+}
+
+.ws-inat-editor-placeholder {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.ws-inat-block-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: x-large;
+}
+
+.ws-inat-block-header svg {
+  max-height: 50px;
+  max-width: 50px;
+}
+
+.ws-inat-block-header > * {
+  padding: 0.5rem;
+}
+
+/*# sourceMappingURL=style-index.css.map*/

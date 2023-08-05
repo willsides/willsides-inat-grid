@@ -5,6 +5,7 @@ Tested up to:      6.1
 Stable tag:        1.0.0
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+Github Repository: https://github.com/willsides/willsides-inat-grid
 
 Displays a grid of observations from iNaturalist
 
@@ -16,7 +17,7 @@ Authors have the option to pull observations based on the observer's username as
 
 == Development ==
 
-Please submit feature requests or bug reports on github. I will attempt to add features as time and resources allow. 
+Please submit feature requests or bug reports at the plugin's Github repository. I will attempt to add features as time and resources allow. 
 
 == Changelog ==
 

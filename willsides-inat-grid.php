@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       Grid of iNaturalist Observations
- * Plugin URI:        github.com/willsides/willsides-inat-grid
+ * Plugin URI:        https://github.com/willsides/willsides-inat-grid
  * Description:       Displays a grid of observations from iNaturalist
  * Requires at least: 6.1
  * Requires PHP:      7.0

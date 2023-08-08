@@ -13,12 +13,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/blocks */ "@wordpress/blocks");
 /* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_blocks__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./style.scss */ "./src/style.scss");
-/* harmony import */ var _block_json__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./block.json */ "./src/block.json");
+/* harmony import */ var _wordpress_core_data__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/core-data */ "@wordpress/core-data");
+/* harmony import */ var _wordpress_core_data__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_core_data__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./style.scss */ "./src/style.scss");
+/* harmony import */ var _block_json__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./block.json */ "./src/block.json");
+
+
 
 
 
@@ -70,7 +76,7 @@ function refreshQuery() {
     inatgrid.innerHTML = '';
     fetch(url).then(response => {
       if (!response.ok) {
-        // This will be returned if iNaturalist didn't like the query
+        // This will be returned if iNaturalist responded, but didn't like the query
         // We throw an error that will be caught and displayed to the user in the editor
         return response.json().then(errorData => {
           throw new Error(`${errorData.error} Status: ${response.status}`);
@@ -156,9 +162,16 @@ function formatAPIdate(isoDateStr) {
   const year = date.getFullYear();
   return `${year}-${month}-${day}`;
 }
+function parseDate(dateString) {
+  if (!/^\d{4}-\d{1,2}-\d{1,2}$/.test(dateString)) {
+    return false;
+  }
+  const [year, month, day] = dateString.split('-');
+  return new Date(year, month - 1, day); // The month argument is 0-indexed, so subtract 1
+}
 
 // Register the block
-(0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_1__.registerBlockType)(_block_json__WEBPACK_IMPORTED_MODULE_5__.name, {
+(0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_1__.registerBlockType)(_block_json__WEBPACK_IMPORTED_MODULE_7__.name, {
   // Set a custom icon
   icon: (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
     width: "202px",
@@ -185,57 +198,61 @@ function formatAPIdate(isoDateStr) {
         gridSize,
         gridGap,
         showHeader,
-        headerFontSize
+        headerLevel
       },
       setAttributes
     } = props;
+    const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.useBlockProps)();
+    const HeaderElement = headerLevel;
+    const postType = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_3__.useSelect)(select => select('core/editor').getCurrentPostType(), []);
+    const [meta] = (0,_wordpress_core_data__WEBPACK_IMPORTED_MODULE_2__.useEntityProp)('postType', postType, 'meta');
 
-    // Initialize the date values with today's date
+    // Initialize the date values with the 'activity_date' and 'activity_end_date' post metadata
+    // 	if they exist in correct YYYY-MM-DD format, otherwise with the current date
     let now = new Date();
     if (!d1) {
-      let dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      let date1 = parseDate(meta['activity_date']) ? parseDate(meta['activity_date']) : new Date(now.getFullYear(), now.getMonth(), now.getDate());
       setAttributes({
-        d1: dayStart.toISOString()
+        d1: date1.toISOString()
       });
     }
     if (!d2) {
-      let tomorrowStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      let date2 = parseDate(meta['activity_end_date']) ? parseDate(meta['activity_end_date']) : parseDate(meta['activity_date']) ? parseDate(meta['activity_date']) : new Date(now.getFullYear(), now.getMonth(), now.getDate());
       setAttributes({
-        d2: tomorrowStart.toISOString()
+        d2: date2.toISOString()
       });
     }
-    const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps)();
     return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       ...blockProps
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InspectorControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.InspectorControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.PanelBody, {
       title: "Observation Query",
       initialOpen: true
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextControl, {
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.TextControl, {
       label: "iNat Username",
       value: user_id,
       onChange: value => setAttributes({
         user_id: value
       })
-    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.PanelBody, {
       title: `Start Date: ${formatFriendlyDate(d1)}`,
       initialOpen: false
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.DatePicker, {
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.DatePicker, {
       currentDate: d1,
       onChange: newDate => setAttributes({
         d1: newDate
       })
-    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.PanelBody, {
       title: `End Date: ${formatFriendlyDate(d2)}`,
       initialOpen: false
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.DatePicker, {
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.DatePicker, {
       currentDate: d2,
       onChange: newDate => setAttributes({
         d2: newDate
       })
-    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.PanelBody, {
       title: "Advanced Parameters",
       initialOpen: false
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.RangeControl, {
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.RangeControl, {
       label: "Maximum number of observations",
       value: per_page,
       onChange: value => setAttributes({
@@ -243,13 +260,13 @@ function formatAPIdate(isoDateStr) {
       }),
       min: 1,
       max: 200
-    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
+    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.Button, {
       variant: "primary",
       onClick: () => refreshQuery()
-    }, "Preview")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+    }, "Preview")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.PanelBody, {
       title: "Layout",
       initialOpen: false
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.RangeControl, {
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.RangeControl, {
       label: "Minimum Item Size",
       value: gridSize,
       onChange: value => setAttributes({
@@ -257,7 +274,7 @@ function formatAPIdate(isoDateStr) {
       }),
       min: 50,
       max: 300
-    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.RangeControl, {
+    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.RangeControl, {
       label: "Grid Gap",
       value: gridGap,
       onChange: value => setAttributes({
@@ -265,15 +282,45 @@ function formatAPIdate(isoDateStr) {
       }),
       min: 0,
       max: 50
-    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, {
+    })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.PanelBody, {
       title: "Header",
       initialOpen: false
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.ToggleControl, {
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.ToggleControl, {
       label: "Show Header",
       checked: showHeader,
       onChange: value => setAttributes({
         showHeader: value
       })
+    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.SelectControl, {
+      label: "Header Level",
+      value: headerLevel,
+      options: [{
+        label: 'h1',
+        value: 'h1'
+      }, {
+        label: 'h2',
+        value: 'h2'
+      }, {
+        label: 'h3',
+        value: 'h3'
+      }, {
+        label: 'h4',
+        value: 'h4'
+      }, {
+        label: 'h5',
+        value: 'h5'
+      }, {
+        label: 'h6',
+        value: 'h6'
+      }, {
+        label: 'h7',
+        value: 'h7'
+      }],
+      onChange: value => {
+        setAttributes({
+          headerLevel: value
+        });
+      }
     }))), showHeader ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       class: "ws-inat-block-header"
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
@@ -290,7 +337,7 @@ function formatAPIdate(isoDateStr) {
       d: "M0,20.7263158 C54.5248587,26.3201751 97.3849609,46.3506571 128.580307,80.8177618 C129.79793,82.1630894 133.17907,85.9671053 135.762791,85.025 C138.346512,84.0828947 141.499632,78.1866754 142.878787,76.1338022 C145.044488,72.9101545 151.734884,61.4723684 166.297674,56.7618421 C180.860465,52.0513158 199.313331,57.29323 199.98336,57.5252042 C201.242664,57.9611941 202.513754,58.5328898 201.788146,59.5540524 C201.062539,60.5752149 194.897364,63.0330024 190.708719,71.0598586 C186.227594,79.6472066 183.593875,96.2609609 182.94767,99.9224135 C180.402526,115.000988 174.299302,128.982225 165.472214,140.864406 C149.941743,161.770039 125.979483,176.17799 98.1288182,178.632593 C82.9034426,179.974473 68.2067059,177.594989 54.9232727,172.242093 C71.020061,170.658979 90.50223,163.000959 106.151872,144.665804 C125.897674,121.531579 104.288372,133.543421 85.7325581,130.481579 C72.7319736,128.336389 62.1504527,121.641086 44.3908476,98.9974003 C50.0879988,97.4013289 61.3190036,95.4542789 70.3782277,95.0660826 C53.6217502,91.2098699 31.3919846,80.5885837 21.5565397,64.2256177 C29.4608287,61.4778099 39.861857,62.475544 48.1719022,62.8370987 C16.5208943,43.7475222 2.87054309,33.46405 0,20.7263158 Z M75.6325581,-8.52651283e-14 C77.5030666,0.913766419 105.702313,13.1841017 119.32093,31.5605263 C138.346512,57.2328947 139.051163,81.9631579 133.883721,76.3105263 C121.740896,63.0275681 110.57747,54.5219154 96.772093,44.9855263 C86.2023256,37.6842105 79.1384898,16.8742837 75.6325581,-8.52651283e-14 Z M173.874316,64.0813655 C171.289891,64.308092 169.378097,66.5927128 169.604204,69.1842089 C169.830312,71.775705 172.1087,73.6927294 174.693126,73.4660029 C177.277551,73.2392764 179.189345,70.9546556 178.963237,68.3631595 C178.737129,65.7716635 176.458742,63.854639 173.874316,64.0813655 Z",
       id: "iNaturalist-Logo",
       fill: "#74AC00"
-    }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("inline", null, "Observations")) : '', (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(HeaderElement, null, "Observations")) : '', (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       class: "ws-inat-grid-container"
       // Allows reactive adjustments to the grid layout section
       ,
@@ -306,7 +353,7 @@ function formatAPIdate(isoDateStr) {
       "data-per_page": per_page
     }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       class: "ws-inat-editor-placeholder"
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("inline", null, "Enter observation search parameters in the block settings sidebar, then click the 'Preview' button."), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("inline", null, "Enter observation search parameters in the block settings sidebar, then click the 'Preview' button."), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.Button, {
       variant: "primary",
       onClick: () => refreshQuery()
     }, "Preview")));
@@ -320,10 +367,12 @@ function formatAPIdate(isoDateStr) {
         per_page,
         gridSize,
         gridGap,
-        showHeader
+        showHeader,
+        headerLevel
       }
     } = props;
-    const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps.save();
+    const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.useBlockProps.save();
+    const HeaderElement = headerLevel;
     return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       ...blockProps
     }, showHeader ? (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -342,7 +391,7 @@ function formatAPIdate(isoDateStr) {
       d: "M0,20.7263158 C54.5248587,26.3201751 97.3849609,46.3506571 128.580307,80.8177618 C129.79793,82.1630894 133.17907,85.9671053 135.762791,85.025 C138.346512,84.0828947 141.499632,78.1866754 142.878787,76.1338022 C145.044488,72.9101545 151.734884,61.4723684 166.297674,56.7618421 C180.860465,52.0513158 199.313331,57.29323 199.98336,57.5252042 C201.242664,57.9611941 202.513754,58.5328898 201.788146,59.5540524 C201.062539,60.5752149 194.897364,63.0330024 190.708719,71.0598586 C186.227594,79.6472066 183.593875,96.2609609 182.94767,99.9224135 C180.402526,115.000988 174.299302,128.982225 165.472214,140.864406 C149.941743,161.770039 125.979483,176.17799 98.1288182,178.632593 C82.9034426,179.974473 68.2067059,177.594989 54.9232727,172.242093 C71.020061,170.658979 90.50223,163.000959 106.151872,144.665804 C125.897674,121.531579 104.288372,133.543421 85.7325581,130.481579 C72.7319736,128.336389 62.1504527,121.641086 44.3908476,98.9974003 C50.0879988,97.4013289 61.3190036,95.4542789 70.3782277,95.0660826 C53.6217502,91.2098699 31.3919846,80.5885837 21.5565397,64.2256177 C29.4608287,61.4778099 39.861857,62.475544 48.1719022,62.8370987 C16.5208943,43.7475222 2.87054309,33.46405 0,20.7263158 Z M75.6325581,-8.52651283e-14 C77.5030666,0.913766419 105.702313,13.1841017 119.32093,31.5605263 C138.346512,57.2328947 139.051163,81.9631579 133.883721,76.3105263 C121.740896,63.0275681 110.57747,54.5219154 96.772093,44.9855263 C86.2023256,37.6842105 79.1384898,16.8742837 75.6325581,-8.52651283e-14 Z M173.874316,64.0813655 C171.289891,64.308092 169.378097,66.5927128 169.604204,69.1842089 C169.830312,71.775705 172.1087,73.6927294 174.693126,73.4660029 C177.277551,73.2392764 179.189345,70.9546556 178.963237,68.3631595 C178.737129,65.7716635 176.458742,63.854639 173.874316,64.0813655 Z",
       id: "iNaturalist-Logo",
       fill: "#74AC00"
-    }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("inline", null, "Observations")) : '', (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(HeaderElement, null, "Observations")) : '', (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       class: "ws-inat-grid-container",
       style: {
         gridTemplateColumns: `repeat(auto-fill, minmax(${gridSize}px, 1fr))`,
@@ -400,6 +449,26 @@ module.exports = window["wp"]["components"];
 
 /***/ }),
 
+/***/ "@wordpress/core-data":
+/*!**********************************!*\
+  !*** external ["wp","coreData"] ***!
+  \**********************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["coreData"];
+
+/***/ }),
+
+/***/ "@wordpress/data":
+/*!******************************!*\
+  !*** external ["wp","data"] ***!
+  \******************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["data"];
+
+/***/ }),
+
 /***/ "@wordpress/element":
 /*!*********************************!*\
   !*** external ["wp","element"] ***!
@@ -416,7 +485,7 @@ module.exports = window["wp"]["element"];
   \************************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"willsides/willsides-inat-grid","version":"1.0.0","title":"Grid of iNaturalist Observations","category":"embed","icon":"smiley","description":"Displays a grid of observations from iNaturalist","supports":{"html":false,"align":["wide","full"],"typography":{"__experimentalFontFamily":true,"__experimentalFontWeight":true,"__experimentalFontStyle":true,"__experimentalTextTransform":true,"__experimentalLetterSpacing":true}},"attributes":{"user_id":{"type":"string","default":""},"d1":{"type":"string"},"d2":{"type":"string"},"per_page":{"type":"integer","default":200},"gridSize":{"type":"integer","default":150},"gridGap":{"type":"integer","default":3},"showHeader":{"type":"boolean","default":true}},"textdomain":"inat-observations","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","viewScript":"file:./script.js"}');
+module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"willsides/willsides-inat-grid","version":"1.1.0","title":"Grid of iNaturalist Observations","category":"embed","icon":"smiley","description":"Displays a grid of observations from iNaturalist","supports":{"html":false,"align":["wide","full"],"typography":{"fontSize":true,"__experimentalFontFamily":true,"__experimentalFontWeight":true,"__experimentalFontStyle":true,"__experimentalTextTransform":true,"__experimentalLetterSpacing":true}},"attributes":{"user_id":{"type":"string","default":""},"d1":{"type":"string"},"d2":{"type":"string"},"per_page":{"type":"integer","default":200},"gridSize":{"type":"integer","default":150},"gridGap":{"type":"integer","default":3},"showHeader":{"type":"boolean","default":true},"headerLevel":{"type":"string","enum":["h1","h2","h3","h4","h5","h6","h7"],"default":"h7"}},"textdomain":"inat-observations","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","viewScript":"file:./script.js"}');
 
 /***/ })
 
